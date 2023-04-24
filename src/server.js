@@ -19,23 +19,39 @@ const wss = new WebSocket.Server({
     server
 })
 
+const sockets = [];
+//가상소켓
+
 //브라우저 연결 소켓
 
 wss.on("connection", (socket)=>{
+    //가상소켓에 연결된 소켓을 집어넣기
+    sockets.push(socket);
+    socket["nickname"] = "Anon";
     //브라우저와 연결되면 로그 찍고
     console.log('Connected to Browser')
-
     //브라우저와 연결이 끊어지면 로그찍음 ( 창을 닫음)
     socket.on("close", () => {
         console.log("Disconnected from Server No!!");
     });
     
     //브라우저에서 메세지를 보내면 콘솔로 찍음
-    socket.on("message", (message) =>{
-        console.log("Broweser to Server :", message.toString());
+    socket.on("message", (msg) =>{
+        const message = JSON.parse(msg.toString());
+
+
+        switch(message.type){
+            case "new_message":
+                sockets.forEach((aSocket)=>aSocket.send(`${socket.nickname}: ${message.payload}`));
+                break;
+            case "nickname":
+                socket["nickname"] = message.payload;
+                break;
+
+        }
+        
+        
     });
-    //브라우저에 메세지 보냄
-    socket.send("hello!!!");
-})
+});
 
 server.listen(3000, handleListen);
