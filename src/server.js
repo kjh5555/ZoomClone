@@ -1,6 +1,7 @@
 
 import http from "http";
-import WebSocket from "ws";
+//import WebSocket from "ws";   WebSocket 임포트
+import  SocketIO from "socket.io"; //SocketIO.ver
 import express from "express";
 
 const app = express();
@@ -13,12 +14,26 @@ app.get("/*" , (req,res) => res.redirect("/"));
 
 const handleListen = () => console.log(`Listening on http://localhost:3000`);
 
-const server = http.createServer(app);
+const httpServer = http.createServer(app);
+const wsServer = SocketIO(httpServer);
 
-const wss = new WebSocket.Server({
-    server
-})
+//백엔드에서 연결받을 준비 완료
+wsServer.on("connection", socket=>{
+    socket.onAny((event)=>{
+        console.log(`Socket Event:${event}`);
+    });
+    socket.on("enter_room", (roomName,showRoom) => {
+         //socket on 할 때 app.js와 이벤트 이름 맞춰야함
+        socket.join(roomName);
+        showRoom();
+    });
+   
+});
 
+
+//WebSocket으로 구현한 코드
+/*
+const wss = new WebSocket.Server({ server });
 const sockets = [];
 //가상소켓
 
@@ -53,5 +68,9 @@ wss.on("connection", (socket)=>{
         
     });
 });
+*/
 
-server.listen(3000, handleListen);
+
+
+
+httpServer.listen(3000, handleListen);

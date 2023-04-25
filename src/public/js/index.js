@@ -1,59 +1,37 @@
-const messageList = document.querySelector('ul');
-const messageForm = document.querySelector('#message');
-const nickForm = document.querySelector('#nick');
-const socket = new WebSocket(`ws://${window.location.host}`);
-//서버로의 연결 소켓
+const socket = io();
 
-function makeMessage(type , payload){
-    const msg = {type, payload}
-    return JSON.stringify(msg)
+const welcome = document.getElementById('welcome');
+const form = welcome.querySelector('form');
+const room = document.getElementById('room');
+
+room.hidden = 'true';
+
+
+let roomName;
+
+
+function showRoom(){
+    const h3 = room.querySelector('h3');
+    h3.innerText = `Room ${roomName}`;
+    welcome.hidden = true;
+    room.hidden = false;
 }
 
 
 
 
 
-//socket이 오픈되면 서버와 연결되었다고 표시
-socket.addEventListener('open',() =>{
-    console.log('Connected to Server')
-});
-
-//서버에서 보낸 메세지 이벤트로 받기
-//서버에서 메세지를 보내면 발생
-socket.addEventListener("message", (message)=>{
-    const li = document.createElement('li');
-    li.innerText = message.data;
-    messageList.append(li);
-});
-
-
-//서버가 닫히면 발생
-socket.addEventListener("close", ()=>{
-    console.log('Connected form Server No!!!');
-})
-
-//서버에 답장 보내기
-
-
-
-
-
-function handleSubmit(event){
+function handleRoomSubmit(event){
     event.preventDefault();
-    const input = messageForm.querySelector("input");
-    socket.send(makeMessage("new_message", input.value));
-    input.value = "";
+    const input = form.querySelector('input');
+    socket.emit("enter_room",input.value,showRoom);
+    roomName = input.value;
+    //emit은 소켓에 이벤트를 정의해줄 수 있음
+    //이벤트 전송과 메세지를 Object로 전송가능
+    //emit(이벤트이름, 전달JSON값, 콜백)
+
+    input.value='';
 }
 
-function handleNickSubmit(event){
-    event.preventDefault();
-    const input = nickForm.querySelector('input');
-    socket.send(
-        makeMessage("nickname",input.value)
-        
-    );
-    input.value = "";
-}
 
-messageForm.addEventListener("submit", handleSubmit);
-nickForm.addEventListener('submit', handleNickSubmit);
+form.addEventListener("submit", handleRoomSubmit);
