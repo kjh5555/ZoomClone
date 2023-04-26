@@ -13,13 +13,19 @@ html(lang="en")
         main 
             div#welcome 
                 form 
-                    input(placeholder = '방 이름', required, type = 'text')
-                    button 입장
+                    input#roomName(placeholder="room name" required, type="text")
+                    input#name(placeholder="Nickname" required, type="text")
+                    button Enter Room
+                h4 Open Rooms:
+                ul     
 
             div#room
                 h3 
                 ul 
-                form 
+                form#nickname 
+                    input(placeholder = '닉네임을 입력하세요', required, type = 'text')
+                    button 닉네임 저장
+                form#msg 
                     input(placeholder = '메세지', required, type = 'text')
                     button 입력
 
