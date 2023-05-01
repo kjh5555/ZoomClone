@@ -42,9 +42,9 @@ function showRoom(){
     welcome.hidden = true;
     room.hidden = false;
     const msgForm = room.querySelector('#msg');
-    const nameForm = room.querySelector('#nickname');
+    
     msgForm.addEventListener('submit',handleMessageSubmit);
-    nameForm.addEventListener('submit', handleNicknameSubmit);
+    
 }
 
 
